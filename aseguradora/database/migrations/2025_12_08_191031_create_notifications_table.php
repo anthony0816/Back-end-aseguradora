@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('account', function (Blueprint $table) {
+        Schema::create('notification', function (Blueprint $table) {
             $table->id();
             
-            $table->foreignId('owner_id')
+            $table->foreignId('user_id')
                   ->constrained('user')
                   ->onDelete('cascade');
-
-            $table->bigInteger('login')->unique();
-            $table->string('trading_status')->default('enable');
-            $table->string('status')->default('enable');
+                  
+            $table->json('metadata')->nullable();
+            $table->string('mensaje');
             
             $table->timestamps();
         });
@@ -25,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('account');
+        Schema::dropIfExists('notification');
     }
 };

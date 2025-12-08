@@ -2,31 +2,31 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+// Importamos BelongsToMany, HasMany, etc.
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
+
+    // 🚨 Importante: Indica a Eloquent que la tabla se llama 'user' (singular)
+    protected $table = 'user';
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Los atributos que son asignables masivamente.
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Los atributos que deben ocultarse para la serialización.
      */
     protected $hidden = [
         'password',
@@ -34,11 +34,37 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Los atributos que deben ser casteados.
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_admin' => 'boolean', // Casteamos is_admin a booleano
     ];
+
+    // --- Relaciones Eloquent ---
+
+    /**
+     * Un usuario puede tener muchas cuentas de trading.
+     */
+    public function accounts(): HasMany
+    {
+        return $this->hasMany(Account::class, 'owner_id');
+    }
+
+    /**
+     * Un usuario puede crear muchas reglas de riesgo.
+     */
+    public function createdRiskRules(): HasMany
+    {
+        return $this->hasMany(RiskRule::class, 'created_by_user_id');
+    }
+
+    /**
+     * Un usuario puede tener muchas notificaciones.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
 }
