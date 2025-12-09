@@ -1,0 +1,46 @@
+### 1. POST /api/time-range-operation-parameters (CREATE)
+# Crea un nuevo parámetro de rango de tiempo (asigna un nuevo ID padre/hijo)
+POST http://127.0.0.1:8000/api/time-range-operation-parameters
+Content-Type: application/json
+Accept: application/json
+
+{
+    "time_window_minutes": 60,
+    "min_open_trades": 2,
+    "max_open_trades": 10
+}
+
+---
+
+### 2. GET /api/time-range-operation-parameters (READ ALL)
+# Obtiene todos los parámetros de rango de tiempo
+GET http://127.0.0.1:8000/api/time-range-operation-parameters
+Accept: application/json
+
+---
+
+### 3. GET /api/time-range-operation-parameters/{id} (READ ONE)
+# Obtiene un parámetro específico por su ID (ejemplo: ID 1)
+GET http://127.0.0.1:8000/api/time-range-operation-parameters/1
+Accept: application/json
+
+---
+
+### 4. PATCH /api/time-range-operation-parameters/{id} (UPDATE)
+# Actualiza un parámetro específico (ejemplo: ID 4). Usamos PATCH para enviar solo los campos modificados.
+PATCH http://127.0.0.1:8000/api/time-range-operation-parameters/4
+Content-Type: application/json
+Accept: application/json
+
+{
+    "time_window_minutes": 30, 
+    "min_open_trades": 3,
+    "max_open_trades": 5
+}
+
+---
+
+### 5. DELETE /api/time-range-operation-parameters/{id} (DELETE)
+# Elimina un parámetro específico (ejemplo: ID 1) y su registro padre asociado.
+DELETE http://127.0.0.1:8000/api/time-range-operation-parameters/1
+Accept: application/json

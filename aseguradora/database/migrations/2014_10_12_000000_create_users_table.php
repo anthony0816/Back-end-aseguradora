@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. USUARIO (Tabla 'user')
-        Schema::create('user', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->boolean('is_admin')->default(false); // Aseguramos el valor por defecto
+            $table->boolean('is_admin')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user');
+        Schema::dropIfExists('users');
     }
-}; // NO debe haber un punto y coma extra aquí, pero verifica que no haya nada ANTES de 'public'
+};

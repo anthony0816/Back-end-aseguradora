@@ -1,0 +1,43 @@
+### 1. POST /api/risk-actions (CREATE)
+# Crea un nuevo tipo de acción de riesgo.
+POST http://127.0.0.1:8000/api/risk-actions
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Suspender Trade por 24h",
+    "slug": "suspend_trade_24h"
+}
+
+---
+
+### 2. GET /api/risk-actions (READ ALL)
+# Obtiene todos los tipos de acción de riesgo.
+GET http://127.0.0.1:8000/api/risk-actions
+Accept: application/json
+
+---
+
+### 3. GET /api/risk-actions/{id} (READ ONE)
+# Obtiene un tipo de acción específico por su ID (ejemplo: ID 1).
+GET http://127.0.0.1:8000/api/risk-actions/1
+Accept: application/json
+
+---
+
+### 4. PATCH /api/risk-actions/{id} (UPDATE)
+# Actualiza un tipo de acción específico (ejemplo: ID 2). Usamos PATCH para enviar solo los campos modificados.
+PATCH http://127.0.0.1:8000/api/risk-actions/2
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Desactivar Cuenta Definitivamente"
+}
+
+---
+
+### 5. DELETE /api/risk-actions/{id} (DELETE)
+# Elimina un tipo de acción específico (ejemplo: ID 3). El controlador evitará la eliminación si la acción está en uso.
+DELETE http://127.0.0.1:8000/api/risk-actions/3
+Accept: application/json

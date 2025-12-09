@@ -9,51 +9,56 @@ class TradeController extends Controller
 {
     public function index()
     {
-        // Carga la relación 'account'
-        return response()->json(Trade::with('account')->get());
+        $trades = Trade::with(['account'])->get();
+        return response()->json($trades, 200);
     }
 
     public function store(Request $request)
     {
-        // La validación asegura que la cuenta exista y que los datos sean correctos
         $validated = $request->validate([
-            'account_id' => 'required|exists:account,id',
+            'account_id' => 'required|exists:accounts,id',
             'type' => 'required|in:BUY,SELL',
-            'volume' => 'required|numeric|min:0.0001',
+            'volume' => 'required|numeric|min:0',
             'open_time' => 'required|date',
+            'close_time' => 'nullable|date|after:open_time',
             'open_price' => 'required|numeric|min:0',
-            'status' => 'required|in:open,closed', // Usamos el status por defecto 'open' en la migración
-            'close_time' => 'nullable|date',
             'close_price' => 'nullable|numeric|min:0',
+            'status' => 'required|in:open,closed',
         ]);
-        
+
         $trade = Trade::create($validated);
-
-        return response()->json($trade, 201);
+        return response()->json(['message' => 'Trade creado exitosamente.', 'data' => $trade], 201);
     }
 
-    public function show(Trade $trade)
+    public function show(string $id)
     {
-        return response()->json($trade->load('account'));
+        $trade = Trade::with(['account', 'incidents'])->findOrFail($id);
+        return response()->json($trade, 200);
     }
 
-    public function update(Request $request, Trade $trade)
+    public function update(Request $request, string $id)
     {
-        // Se utiliza principalmente para cerrar una operación (añadir close_time/close_price/status=closed)
+        $trade = Trade::findOrFail($id);
+        
         $validated = $request->validate([
-            'close_time' => 'nullable|date',
+            'account_id' => 'sometimes|exists:accounts,id',
+            'type' => 'sometimes|in:BUY,SELL',
+            'volume' => 'sometimes|numeric|min:0',
+            'open_time' => 'sometimes|date',
+            'close_time' => 'nullable|date|after:open_time',
+            'open_price' => 'sometimes|numeric|min:0',
             'close_price' => 'nullable|numeric|min:0',
             'status' => 'sometimes|in:open,closed',
         ]);
 
         $trade->update($validated);
-
-        return response()->json($trade);
+        return response()->json(['message' => 'Trade actualizado exitosamente.', 'data' => $trade], 200);
     }
 
-    public function destroy(Trade $trade)
+    public function destroy(string $id)
     {
+        $trade = Trade::findOrFail($id);
         $trade->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Trade eliminado exitosamente.'], 200);
     }
 }

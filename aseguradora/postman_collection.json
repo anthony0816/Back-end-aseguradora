@@ -1,0 +1,214 @@
+{
+  "info": {
+    "name": "Risk Control API",
+    "description": "Colección completa de endpoints para el sistema de Risk Control",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"is_admin\": false\n}"
+            },
+            "url": {"raw": "{{base_url}}/register"}
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@riskcontrol.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/login"}
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/me"}
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/logout"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/users"}
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"is_admin\": false\n}"
+            },
+            "url": {"raw": "{{base_url}}/users"}
+          }
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/users/1"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "List Accounts",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/accounts"}
+          }
+        },
+        {
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"owner_id\": 1,\n  \"login\": 123456789,\n  \"trading_status\": \"enable\",\n  \"status\": \"enable\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/accounts"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trades",
+      "item": [
+        {
+          "name": "List Trades",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/trades"}
+          }
+        },
+        {
+          "name": "Create Trade",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account_id\": 1,\n  \"type\": \"BUY\",\n  \"volume\": 1.5,\n  \"open_time\": \"2025-12-08 10:00:00\",\n  \"open_price\": 1.2345,\n  \"status\": \"open\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/trades"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Risk Rules",
+      "item": [
+        {
+          "name": "List Risk Rules",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/risk-rules"}
+          }
+        },
+        {
+          "name": "Create Risk Rule (Duration)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"created_by_user_id\": 1,\n  \"rule_type_id\": 1,\n  \"name\": \"Minimum Trade Duration\",\n  \"description\": \"Trade must be open for at least 60 seconds\",\n  \"severity\": \"Hard\",\n  \"is_active\": true,\n  \"parameter_type\": \"duration\",\n  \"parameter_data\": {\n    \"duration\": 60\n  },\n  \"action_ids\": [1, 2]\n}"
+            },
+            "url": {"raw": "{{base_url}}/risk-rules"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Risk Evaluation",
+      "item": [
+        {
+          "name": "Evaluate Trade",
+          "request": {
+            "method": "POST",
+            "url": {"raw": "{{base_url}}/risk-evaluation/trade/1"}
+          }
+        },
+        {
+          "name": "Evaluate Account",
+          "request": {
+            "method": "POST",
+            "url": {"raw": "{{base_url}}/risk-evaluation/account/1"}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/dashboard/stats"}
+          }
+        },
+        {
+          "name": "Recent Incidents",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/dashboard/recent-incidents?limit=10"}
+          }
+        },
+        {
+          "name": "Account Risk Profile",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/dashboard/account-risk-profile/1"}
+          }
+        }
+      ]
+    }
+  ]
+}

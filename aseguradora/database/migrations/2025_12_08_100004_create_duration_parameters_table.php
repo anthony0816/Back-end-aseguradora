@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('risk_rule_slug', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
+        Schema::create('duration_parameters', function (Blueprint $table) {
+            $table->foreignId('parameter_id')->primary()->constrained('parameters')->onDelete('cascade');
+            $table->integer('duration');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('risk_rule_slug');
+        Schema::dropIfExists('duration_parameters');
     }
 };

@@ -1,66 +1,137 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Risk Control System - Backend API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema completo de gestión de riesgo para cuentas de trading, desarrollado con Laravel 10.
 
-## About Laravel
+## 🚀 Características
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Gestión de Usuarios**: Administradores y traders con autenticación JWT
+- **Cuentas de Trading**: Control de cuentas con estados habilitados/deshabilitados
+- **Trades**: Registro completo de operaciones (BUY/SELL)
+- **Reglas de Riesgo**: Sistema flexible de reglas configurables
+  - Duration Check: Validación de duración mínima de trades
+  - Volume Consistency: Consistencia de volumen basada en histórico
+  - Time Range Operations: Control de operaciones en ventanas de tiempo
+- **Acciones Automáticas**: Notificaciones, deshabilitación de cuentas, etc.
+- **Incidentes**: Registro de violaciones con contadores para reglas Soft/Hard
+- **Dashboard**: Estadísticas y perfiles de riesgo por cuenta
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.1
+- Composer
+- MySQL >= 5.7
+- Node.js y NPM (opcional)
 
-## Learning Laravel
+## ⚡ Instalación Rápida
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Windows
+```bash
+install.bat
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Linux/Mac
+```bash
+chmod +x install.sh
+./install.sh
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Manual
+```bash
+composer install
+cp .env.example .env
+# Configurar .env con credenciales de MySQL
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+php artisan serve
+```
 
-## Laravel Sponsors
+## 📚 Documentación
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- **[SETUP.md](SETUP.md)** - Guía detallada de instalación
+- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Documentación completa de endpoints
+- **[postman_collection.json](postman_collection.json)** - Colección de Postman para pruebas
 
-### Premium Partners
+## 🔑 Credenciales por Defecto
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- **Admin**: `admin@riskcontrol.com` / `password123`
+- **Trader**: `trader@riskcontrol.com` / `password123`
 
-## Contributing
+## 🛠️ Endpoints Principales
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Autenticación
+- `POST /api/register` - Registro de usuario
+- `POST /api/login` - Login
+- `POST /api/logout` - Logout
+- `GET /api/me` - Usuario actual
 
-## Code of Conduct
+### Recursos
+- `/api/users` - Gestión de usuarios
+- `/api/accounts` - Cuentas de trading
+- `/api/trades` - Operaciones
+- `/api/risk-rules` - Reglas de riesgo
+- `/api/risk-actions` - Acciones disponibles
+- `/api/incidents` - Incidentes registrados
+- `/api/notifications` - Notificaciones
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Evaluación de Riesgo
+- `POST /api/risk-evaluation/trade/{id}` - Evaluar un trade
+- `POST /api/risk-evaluation/account/{id}` - Evaluar cuenta completa
 
-## Security Vulnerabilities
+### Dashboard
+- `GET /api/dashboard/stats` - Estadísticas generales
+- `GET /api/dashboard/recent-incidents` - Incidentes recientes
+- `GET /api/dashboard/account-risk-profile/{id}` - Perfil de riesgo
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🗄️ Modelo de Datos
 
-## License
+El sistema implementa un modelo completo con:
+- Usuarios y cuentas
+- Trades con estados open/closed
+- Reglas de riesgo con tipos configurables
+- Parámetros polimórficos (duration, volume, time_range)
+- Sistema de acciones M:M con reglas
+- Registro de incidentes con contadores
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🔧 Comandos Útiles
+
+```bash
+# Ver todas las rutas
+php artisan route:list
+
+# Limpiar y reiniciar BD
+php artisan migrate:fresh --seed
+
+# Limpiar cache
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+```
+
+## 📦 Estructura del Proyecto
+
+```
+backend/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/     # Controladores de API
+│   │   └── Middleware/      # Middleware personalizado
+│   ├── Models/              # Modelos Eloquent
+│   └── Services/            # Lógica de negocio
+├── database/
+│   ├── migrations/          # Migraciones de BD
+│   └── seeders/             # Datos iniciales
+├── routes/
+│   └── api.php              # Rutas de API
+└── config/                  # Configuración
+```
+
+## 🧪 Testing
+
+```bash
+php artisan test
+```
+
+## 📝 Licencia
+
+Este proyecto es privado y confidencial.

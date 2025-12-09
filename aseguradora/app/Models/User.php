@@ -2,21 +2,20 @@
 
 namespace App\Models;
 
-// Importamos BelongsToMany, HasMany, etc.
-use Illuminate\Database\Eloquent\Relations\HasMany;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-
-    // 🚨 Importante: Indica a Eloquent que la tabla se llama 'user' (singular)
-    protected $table = 'user';
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Los atributos que son asignables masivamente.
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -26,7 +25,9 @@ class User extends Authenticatable
     ];
 
     /**
-     * Los atributos que deben ocultarse para la serialización.
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -34,37 +35,27 @@ class User extends Authenticatable
     ];
 
     /**
-     * Los atributos que deben ser casteados.
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'is_admin' => 'boolean', // Casteamos is_admin a booleano
+        'is_admin' => 'boolean',
     ];
 
-    // --- Relaciones Eloquent ---
-
-    /**
-     * Un usuario puede tener muchas cuentas de trading.
-     */
-    public function accounts(): HasMany
+    public function accounts()
     {
         return $this->hasMany(Account::class, 'owner_id');
     }
 
-    /**
-     * Un usuario puede crear muchas reglas de riesgo.
-     */
-    public function createdRiskRules(): HasMany
-    {
-        return $this->hasMany(RiskRule::class, 'created_by_user_id');
-    }
-
-    /**
-     * Un usuario puede tener muchas notificaciones.
-     */
-    public function notifications(): HasMany
+    public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function riskRules()
+    {
+        return $this->hasMany(RiskRule::class, 'created_by_user_id');
     }
 }

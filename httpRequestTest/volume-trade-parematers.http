@@ -1,0 +1,26 @@
+### GET /api/volume-trade-parameters
+GET http://127.0.0.1:8000/api/volume-trade-parameters
+Accept: application/json
+
+
+### DELETE /api/volume-trade-parameters/{id}
+DELETE http://127.0.0.1:8000/api/volume-trade-parameters/1
+Accept: application/json
+
+
+### UPDATE /api/time-range-operation-parameters/{id}
+# Usamos PATCH para enviar solo los campos modificados.
+PATCH http://127.0.0.1:8000/api/volume-trade-parameters/4
+
+
+Content-Type: application/json
+Accept: application/json
+
+{
+    "time_window_minutes": 30,  
+    "min_open_trades": 3,
+    "max_open_trades": 5
+}
+
+
+

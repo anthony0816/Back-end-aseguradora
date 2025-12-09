@@ -9,56 +9,46 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        // ✅ CORREGIDO: Usamos select() para cargar solo el 'id' y 'name' del usuario
-        return response()->json(
-            Notification::with([
-                'user' => function ($query) {
-                    $query->select('id', 'name'); 
-                }
-            ])->get()
-        );
+        $notifications = Notification::with(['user'])->get();
+        return response()->json($notifications, 200);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:user,id',
-            'mensaje' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
             'metadata' => 'nullable|json',
+            'mensaje' => 'required|string',
         ]);
-        
+
         $notification = Notification::create($validated);
-
-        return response()->json($notification, 201);
+        return response()->json(['message' => 'Notificación creada exitosamente.', 'data' => $notification], 201);
     }
 
-    public function show(Notification $notification)
+    public function show(string $id)
     {
-        // ✅ CORREGIDO: Usamos load() y select() para limitar los campos del usuario
-        return response()->json(
-            $notification->load([
-                'user' => function ($query) {
-                    $query->select('id', 'name');
-                }
-            ])
-        );
+        $notification = Notification::with(['user'])->findOrFail($id);
+        return response()->json($notification, 200);
     }
 
-    public function update(Request $request, Notification $notification)
+    public function update(Request $request, string $id)
     {
+        $notification = Notification::findOrFail($id);
+        
         $validated = $request->validate([
-            'mensaje' => 'sometimes|string|max:255',
+            'user_id' => 'sometimes|exists:users,id',
             'metadata' => 'nullable|json',
+            'mensaje' => 'sometimes|string',
         ]);
 
         $notification->update($validated);
-
-        return response()->json($notification);
+        return response()->json(['message' => 'Notificación actualizada exitosamente.', 'data' => $notification], 200);
     }
 
-    public function destroy(Notification $notification)
+    public function destroy(string $id)
     {
+        $notification = Notification::findOrFail($id);
         $notification->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Notificación eliminada exitosamente.'], 200);
     }
 }

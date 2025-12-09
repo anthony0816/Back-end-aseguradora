@@ -6,25 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
-    {
-        Schema::create('account', function (Blueprint $table) {
-            $table->id();
-            
-            $table->foreignId('owner_id')
-                  ->constrained('user')
-                  ->onDelete('cascade');
+{
+    Schema::create('accounts', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
+        $table->unsignedBigInteger('login')->unique(); 
+        $table->enum('trading_status', ['enable', 'disable'])->default('enable');
+        $table->enum('status', ['enable', 'disable'])->default('enable');
+        $table->timestamps(); 
+    });
+}
 
-            $table->bigInteger('login')->unique();
-            $table->string('trading_status')->default('enable');
-            $table->string('status')->default('enable');
-            
-            $table->timestamps();
-        });
-    }
-
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('account');
+        Schema::dropIfExists('accounts');
     }
 };

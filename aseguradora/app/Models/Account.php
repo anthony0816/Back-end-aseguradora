@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\User; // Asegurar que el modelo User esté importado
 
 class Account extends Model
 {
-    protected $table = 'account';
+    use HasFactory;
 
     protected $fillable = [
         'owner_id',
@@ -18,25 +16,18 @@ class Account extends Model
         'status',
     ];
 
-    protected $casts = [
-        'login' => 'integer',
-    ];
-
-    // --- Relaciones ---
-
-    /**
-     * Una cuenta pertenece a un usuario (el dueño).
-     */
-    public function owner(): BelongsTo
+    public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
-    /**
-     * Una cuenta tiene muchos trades.
-     */
-    public function trades(): HasMany
+    public function trades()
     {
-        return $this->hasMany(Trade::class, 'account_id');
+        return $this->hasMany(Trade::class);
+    }
+
+    public function incidents()
+    {
+        return $this->hasMany(Incident::class);
     }
 }

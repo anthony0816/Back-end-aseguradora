@@ -9,39 +9,44 @@ class RiskRuleSlugController extends Controller
 {
     public function index()
     {
-        return response()->json(RiskRuleSlug::all());
+        $slugs = RiskRuleSlug::all();
+        return response()->json($slugs, 200);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:risk_rule_slug|max:255',
+            'name' => 'required|string|unique:risk_rule_slugs,name',
+            'slug' => 'required|string|unique:risk_rule_slugs,slug',
         ]);
-        
+
         $slug = RiskRuleSlug::create($validated);
-        return response()->json($slug, 201);
+        return response()->json(['message' => 'Tipo de regla creado exitosamente.', 'data' => $slug], 201);
     }
 
-    public function show(RiskRuleSlug $riskRuleSlug)
+    public function show(string $id)
     {
-        return response()->json($riskRuleSlug);
+        $slug = RiskRuleSlug::with(['riskRules'])->findOrFail($id);
+        return response()->json($slug, 200);
     }
 
-    public function update(Request $request, RiskRuleSlug $riskRuleSlug)
+    public function update(Request $request, string $id)
     {
+        $slug = RiskRuleSlug::findOrFail($id);
+        
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|unique:risk_rule_slug,slug,' . $riskRuleSlug->id,
+            'name' => 'sometimes|string|unique:risk_rule_slugs,name,' . $id,
+            'slug' => 'sometimes|string|unique:risk_rule_slugs,slug,' . $id,
         ]);
 
-        $riskRuleSlug->update($validated);
-        return response()->json($riskRuleSlug);
+        $slug->update($validated);
+        return response()->json(['message' => 'Tipo de regla actualizado exitosamente.', 'data' => $slug], 200);
     }
 
-    public function destroy(RiskRuleSlug $riskRuleSlug)
+    public function destroy(string $id)
     {
-        $riskRuleSlug->delete();
-        return response()->json(null, 204);
+        $slug = RiskRuleSlug::findOrFail($id);
+        $slug->delete();
+        return response()->json(['message' => 'Tipo de regla eliminado exitosamente.'], 200);
     }
 }

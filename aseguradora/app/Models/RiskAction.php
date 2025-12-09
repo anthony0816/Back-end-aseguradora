@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RiskRuleSlug extends Model
+class RiskAction extends Model
 {
     use HasFactory;
 
@@ -16,6 +16,6 @@ class RiskRuleSlug extends Model
 
     public function riskRules()
     {
-        return $this->hasMany(RiskRule::class, 'rule_type_id');
+        return $this->belongsToMany(RiskRule::class, 'rule_actions', 'risk_action_id', 'risk_rule_id');
     }
 }

@@ -1,0 +1,51 @@
+### 1. POST /api/risk-rules (CREATE)
+# Crea una nueva regla de riesgo, vinculando un conjunto de parámetros existente (parameter_id)
+# NOTA: Debes asegurar que el parameter_id sea un ID existente en la tabla 'parameter' que NO esté ya en uso por otra regla.
+POST http://127.0.0.1:8000/api/risk-rules
+Content-Type: application/json
+Accept: application/json
+
+{
+    "rule_type_id": 1, 
+    "action_id": 1,
+    "parameter_id": 1, 
+    "name": "Límite Máximo de 5 Minutos",
+    "description": "Si la duración excede los 5 minutos, notificar.",
+    "severity": "Hard",
+    "is_active": true
+}
+
+---
+
+### 2. GET /api/risk-rules (READ ALL)
+# Obtiene todas las reglas de riesgo con todas sus relaciones cargadas.
+GET http://127.0.0.1:8000/api/risk-rules
+Accept: application/json
+
+---
+
+### 3. GET /api/risk-rules/{id} (READ ONE)
+# Obtiene una regla de riesgo específica por su ID (ejemplo: ID 1).
+GET http://127.0.0.1:8000/api/risk-rules/1
+Accept: application/json
+
+---
+
+### 4. PATCH /api/risk-rules/{id} (UPDATE)
+# Actualiza una regla específica (ejemplo: ID 1).
+PATCH http://127.0.0.1:8000/api/risk-rules/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Límite Máximo de 10 Minutos (Soft)",
+    "severity": "Soft",
+    "is_active": false
+}
+
+---
+
+### 5. DELETE /api/risk-rules/{id} (DELETE)
+# Elimina una regla de riesgo (ejemplo: ID 1). Esto automáticamente elimina el registro asociado en la tabla 'parameter'.
+DELETE http://127.0.0.1:8000/api/risk-rules/1
+Accept: application/json
