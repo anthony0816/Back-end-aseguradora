@@ -62,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('dashboard/stats', [App\Http\Controllers\DashboardController::class, 'stats']);
     Route::get('dashboard/recent-incidents', [App\Http\Controllers\DashboardController::class, 'recentIncidents']);
     Route::get('dashboard/account-risk-profile/{accountId}', [App\Http\Controllers\DashboardController::class, 'accountRiskProfile']);
+    Route::get('dashboard/user-summary', [App\Http\Controllers\DashboardController::class, 'userSummary']);
 
     // Ruta legacy de pólizas
     Route::apiResource('polizas', PolizaController::class);

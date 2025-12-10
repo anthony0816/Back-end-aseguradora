@@ -8,11 +8,23 @@ use Illuminate\Http\Request;
 class AccountController extends Controller
 {
     /**
-     * READ: Muestra una lista de todas las cuentas. (GET /api/accounts)
+     * READ: Muestra una lista de cuentas del usuario autenticado. (GET /api/accounts)
+     * Query params: ?all=true (solo para admins) para ver todas las cuentas
      */
-    public function index()
+    public function index(Request $request)
     {
-        $accounts = Account::with(['owner', 'trades'])->get();
+        $user = $request->user();
+        
+        // Si es admin y solicita todas las cuentas
+        if ($user->is_admin && $request->query('all') === 'true') {
+            $accounts = Account::with(['owner', 'trades'])->get();
+        } else {
+            // Solo las cuentas del usuario autenticado
+            $accounts = Account::with(['owner', 'trades'])
+                ->where('owner_id', $user->id)
+                ->get();
+        }
+        
         return response()->json($accounts, 200);
     }
 

@@ -7,9 +7,23 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $notifications = Notification::with(['user'])->get();
+        $user = $request->user();
+        
+        if ($user->is_admin && $request->query('all') === 'true') {
+            // Admin puede ver todas las notificaciones con ?all=true
+            $notifications = Notification::with(['user'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            // Usuario normal solo ve sus propias notificaciones
+            $notifications = Notification::with(['user'])
+                ->where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+        
         return response()->json($notifications, 200);
     }
 

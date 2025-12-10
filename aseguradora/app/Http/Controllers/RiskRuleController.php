@@ -12,9 +12,20 @@ use Illuminate\Support\Facades\DB;
 
 class RiskRuleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rules = RiskRule::with(['creator', 'ruleType', 'parameter', 'actions'])->get();
+        $user = $request->user();
+        
+        if ($user->is_admin && $request->query('all') === 'true') {
+            // Admin puede ver todas las reglas con ?all=true
+            $rules = RiskRule::with(['creator', 'ruleType', 'parameter', 'actions'])->get();
+        } else {
+            // Usuario normal solo ve sus propias reglas
+            $rules = RiskRule::with(['creator', 'ruleType', 'parameter', 'actions'])
+                ->where('created_by_user_id', $user->id)
+                ->get();
+        }
+        
         return response()->json($rules, 200);
     }
 

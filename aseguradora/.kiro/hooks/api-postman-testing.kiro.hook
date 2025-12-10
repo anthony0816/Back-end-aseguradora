@@ -1,0 +1,32 @@
+{
+  "enabled": true,
+  "name": "API Postman Testing",
+  "description": "Monitors Laravel API source code changes and automatically runs Postman collection tests to validate functionality",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/*.php",
+      "app/Http/Controllers/**/*.php",
+      "app/Models/*.php",
+      "app/Services/*.php",
+      "routes/*.php",
+      "config/*.php",
+      "composer.json",
+      "composer.lock",
+      ".env",
+      ".env.example",
+      "openapi.yaml",
+      "openapi.yml",
+      "swagger.yaml",
+      "swagger.yml",
+      "api.yaml",
+      "api.yml",
+      "postman_collection.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Laravel API source code or configuration has been modified. Please check if a .postman.json file exists in the project root. If the file does not exist or is empty, create a Postman collection for the Laravel API. If it exists, get the collection ID and run the collection, showing me the results and propose fixes for any errors found."
+  }
+}

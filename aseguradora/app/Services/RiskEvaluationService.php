@@ -14,7 +14,12 @@ class RiskEvaluationService
     public function evaluateTrade(Trade $trade)
     {
         $account = $trade->account;
-        $activeRules = RiskRule::where('is_active', true)->with(['ruleType', 'parameter', 'actions'])->get();
+        
+        // Solo evaluar con reglas del propietario de la cuenta
+        $activeRules = RiskRule::where('is_active', true)
+            ->where('created_by_user_id', $account->owner_id)
+            ->with(['ruleType', 'parameter', 'actions'])
+            ->get();
         
         $violations = [];
 
@@ -149,12 +154,18 @@ class RiskEvaluationService
                     break;
                 case 'disable-account':
                     $account->update(['status' => 'disable']);
+                    $this->notifyAccountDisabled($account->owner, $rule, $incident, $account);
                     break;
                 case 'disable-trading':
                     $account->update(['trading_status' => 'disable']);
+                    $this->notifyTradingDisabled($account->owner, $rule, $incident, $account);
                     break;
                 case 'notify-admin':
                     $this->notifyAdmins($rule, $incident, $account);
+                    break;
+                case 'close-open-trades':
+                    $this->closeOpenTrades($account);
+                    $this->notifyTradesClosed($account->owner, $rule, $incident, $account);
                     break;
             }
         }
@@ -190,5 +201,61 @@ class RiskEvaluationService
                 ]),
             ]);
         }
+    }
+
+    protected function notifyAccountDisabled($user, RiskRule $rule, Incident $incident, Account $account)
+    {
+        Notification::create([
+            'user_id' => $user->id,
+            'mensaje' => "🚫 CUENTA DESHABILITADA: Tu cuenta {$account->login} ha sido deshabilitada por violación de la regla '{$rule->name}'",
+            'metadata' => json_encode([
+                'rule_id' => $rule->id,
+                'incident_id' => $incident->id,
+                'account_id' => $account->id,
+                'severity' => $rule->severity,
+                'action' => 'account_disabled',
+            ]),
+        ]);
+    }
+
+    protected function notifyTradingDisabled($user, RiskRule $rule, Incident $incident, Account $account)
+    {
+        Notification::create([
+            'user_id' => $user->id,
+            'mensaje' => "⚠️ TRADING DESHABILITADO: El trading en tu cuenta {$account->login} ha sido deshabilitado por violación de la regla '{$rule->name}'",
+            'metadata' => json_encode([
+                'rule_id' => $rule->id,
+                'incident_id' => $incident->id,
+                'account_id' => $account->id,
+                'severity' => $rule->severity,
+                'action' => 'trading_disabled',
+            ]),
+        ]);
+    }
+
+    protected function notifyTradesClosed($user, RiskRule $rule, Incident $incident, Account $account)
+    {
+        Notification::create([
+            'user_id' => $user->id,
+            'mensaje' => "🔒 TRADES CERRADOS: Todos los trades abiertos en tu cuenta {$account->login} han sido cerrados por violación de la regla '{$rule->name}'",
+            'metadata' => json_encode([
+                'rule_id' => $rule->id,
+                'incident_id' => $incident->id,
+                'account_id' => $account->id,
+                'severity' => $rule->severity,
+                'action' => 'trades_closed',
+            ]),
+        ]);
+    }
+
+    protected function closeOpenTrades(Account $account)
+    {
+        Trade::where('account_id', $account->id)
+            ->where('status', 'open')
+            ->update([
+                'status' => 'closed',
+                'close_time' => now(),
+                'close_price' => DB::raw('open_price'), // Cerrar al mismo precio de apertura
+            ]);
     }
 }

@@ -65,4 +65,32 @@ class DashboardController extends Controller
 
         return response()->json($profile, 200);
     }
+
+    public function userSummary(Request $request)
+    {
+        $user = $request->user();
+        $userAccounts = Account::where('owner_id', $user->id)->pluck('id');
+        
+        $summary = [
+            'user' => $user,
+            'accounts_count' => $userAccounts->count(),
+            'active_accounts' => Account::where('owner_id', $user->id)->where('status', 'enable')->count(),
+            'disabled_accounts' => Account::where('owner_id', $user->id)->where('status', 'disable')->count(),
+            'trading_disabled_accounts' => Account::where('owner_id', $user->id)->where('trading_status', 'disable')->count(),
+            'total_trades' => Trade::whereIn('account_id', $userAccounts)->count(),
+            'open_trades' => Trade::whereIn('account_id', $userAccounts)->where('status', 'open')->count(),
+            'total_incidents' => Incident::whereIn('account_id', $userAccounts)->count(),
+            'unread_notifications' => \App\Models\Notification::where('user_id', $user->id)->count(),
+            'recent_incidents' => Incident::whereIn('account_id', $userAccounts)
+                ->with(['account', 'riskRule'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get(),
+            'accounts_status' => Account::where('owner_id', $user->id)
+                ->select('id', 'login', 'status', 'trading_status', 'updated_at')
+                ->get(),
+        ];
+
+        return response()->json($summary, 200);
+    }
 }

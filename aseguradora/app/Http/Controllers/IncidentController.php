@@ -7,9 +7,25 @@ use Illuminate\Http\Request;
 
 class IncidentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $incidents = Incident::with(['account', 'riskRule', 'trade'])->get();
+        $user = $request->user();
+        
+        if ($user->is_admin && $request->query('all') === 'true') {
+            // Admin puede ver todos los incidentes con ?all=true
+            $incidents = Incident::with(['account', 'riskRule', 'trade'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            // Usuario normal solo ve incidentes de sus cuentas
+            $incidents = Incident::with(['account', 'riskRule', 'trade'])
+                ->whereHas('account', function ($query) use ($user) {
+                    $query->where('owner_id', $user->id);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+        
         return response()->json($incidents, 200);
     }
 

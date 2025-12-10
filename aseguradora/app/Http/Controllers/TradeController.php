@@ -7,9 +7,22 @@ use Illuminate\Http\Request;
 
 class TradeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $trades = Trade::with(['account'])->get();
+        $user = $request->user();
+        
+        if ($user->is_admin && $request->query('all') === 'true') {
+            // Admin puede ver todos los trades con ?all=true
+            $trades = Trade::with(['account'])->get();
+        } else {
+            // Usuario normal solo ve trades de sus cuentas
+            $trades = Trade::with(['account'])
+                ->whereHas('account', function ($query) use ($user) {
+                    $query->where('owner_id', $user->id);
+                })
+                ->get();
+        }
+        
         return response()->json($trades, 200);
     }
 
